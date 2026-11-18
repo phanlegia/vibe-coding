@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nova Customer 360 - Prototype</title>
+<style>
+:root{
+  --bg:#eef2f4; --surface:#fff; --ink:#18242e; --muted:#566370; --line:#d5dde2;
+  --brand:#0a5c73; --brand-ink:#fff; --brand-soft:#e1f1f5; --gold:#f2b84b;
+  --ok:#14703c; --ok-soft:#e1f5e8; --warn:#8a5a00; --warn-soft:#fff3d6; --err:#b3261e; --err-soft:#fde8e6;
+  --r:14px; --tap:44px; --shadow:0 6px 24px rgba(20,40,60,.12);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.45}
+#app{max-width:430px;min-height:100dvh;margin:0 auto;background:var(--bg);display:flex;flex-direction:column}
+@media(min-width:760px){#app{max-width:920px;margin:16px auto;min-height:calc(100dvh - 32px);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}}
+button,input,select{font:inherit;color:inherit}
+button{min-height:var(--tap);min-width:var(--tap);cursor:pointer}
+:focus-visible{outline:3px solid #1b7fd1;outline-offset:2px}
+.demo-banner{background:var(--warn-soft);color:var(--warn);font-size:13px;padding:8px 16px;text-align:center;border-bottom:1px solid #ecd9a6;font-weight:600}
+header.top{background:var(--brand);color:#fff;padding:12px 16px 0}
+header.top .t{display:flex;justify-content:space-between;align-items:center;gap:8px}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;margin-top:8px}
+nav.tabs button{border:0;background:transparent;color:#d6edf3;padding:8px 14px;white-space:nowrap;border-radius:10px 10px 0 0}
+nav.tabs button[aria-current=page]{background:var(--bg);color:var(--brand);font-weight:700}
+main{flex:1;padding:16px}
+h1{font-size:20px;margin:0 0 6px} h2{font-size:17px;margin:18px 0 8px} h3{font-size:16px;margin:0}
+p{margin:4px 0 8px}.muted{color:var(--muted);font-size:14px}
+.card{background:var(--surface);border-radius:var(--r);padding:14px;box-shadow:0 1px 3px rgba(20,40,60,.08);margin-bottom:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:12px;padding:10px 16px;font-weight:600;background:var(--brand);color:#fff}
+.btn.sec{background:var(--brand-soft);color:var(--brand)}.btn.ghost{background:transparent;color:var(--brand);border:1.5px solid var(--brand)}
+.btn.bad{background:#fff;color:var(--err);border:1.5px solid var(--err)}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.field{display:block;margin:10px 0}.field span{display:block;font-size:14px;font-weight:600;margin-bottom:4px}
+.field select,.field input{width:100%;min-height:48px;padding:10px 12px;border:1.5px solid #8a98a4;border-radius:12px;background:#fff}
+.badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:700;white-space:nowrap}
+.b-ok{background:var(--ok-soft);color:var(--ok)}.b-bad{background:var(--err-soft);color:var(--err)}.b-wait{background:var(--warn-soft);color:var(--warn)}.b-info{background:#e3ecff;color:#1f3f9a}
+.row{display:flex;gap:12px;align-items:center;justify-content:space-between}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(min-width:760px){.kpis{grid-template-columns:repeat(4,1fr)}.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}}
+.kpi b{display:block;font-size:26px}
+.fun{display:block;width:100%;text-align:left;border:0;background:none;padding:6px 0}
+.fun .bar{height:30px;border-radius:8px;background:var(--brand);color:#fff;display:flex;align-items:center;padding:0 10px;font-weight:700;min-width:44px;transition:width .4s}
+.fun:hover .bar{background:#073f4f}
+.fun small{display:block;color:var(--muted)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 10px}
+.chips button{border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:6px 14px}
+.chips button[aria-pressed=true]{background:var(--brand);color:#fff;border-color:var(--brand)}
+.li{display:flex;width:100%;text-align:left;justify-content:space-between;gap:8px;align-items:center;background:#fff;border:0;border-bottom:1px solid var(--line);padding:10px 4px;border-radius:0}
+.li:hover{background:#f6fafb}
+.tl{border-left:3px solid var(--brand-soft);margin-left:6px;padding-left:14px}
+.tl>div{position:relative;padding:6px 0 10px}
+.tl>div::before{content:"";position:absolute;left:-21px;top:12px;width:12px;height:12px;border-radius:50%;background:var(--brand)}
+.empty{text-align:center;padding:24px 12px;color:var(--muted)}
+.spin{width:36px;height:36px;border:4px solid var(--brand-soft);border-top-color:var(--brand);border-radius:50%;animation:sp 1s linear infinite;margin:30px auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.spin{animation-duration:3s}.fun .bar{transition:none}}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:20px;background:#18242e;color:#fff;padding:12px 18px;border-radius:12px;z-index:20;max-width:90vw}
+.err{color:var(--err);font-weight:600;font-size:14px}
+.logrow{padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.mask{font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:.05em}
+</style>
+</head>
+<body>
+<div id="app"><div class="demo-banner" role="note">DỮ LIỆU GIẢ LẬP: 200 hồ sơ do máy tạo, không phải khách hàng thật. Tên công ty thành viên là giả định.</div><div id="root" style="display:flex;flex-direction:column;flex:1"></div></div>
+<script>
+"use strict";
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function rng(seed){let s=seed;return()=>{s=(s*1664525+1013904223)%4294967296;return s/4294967296}}
+const STAGES=[["discover","Khám phá",50],["bought","Đã mua",30],["resident","Cư dân",56],["guest","Khách lưu trú",40],["owner","Chủ sở hữu",24]];
+const STN=Object.fromEntries(STAGES.map(s=>[s[0],s[1]]));
+const CONSENT={full:["Đồng ý liên ngành","b-ok"],partial:["Chỉ đồng ý dịch vụ","b-wait"],none:["Chưa/đã rút đồng ý","b-bad"]};
+const HO=["Nguyễn","Trần","Lê","Phạm","Hoàng","Vũ","Đặng","Bùi","Đỗ","Ngô"],DEM=["Văn","Thị","Minh","Quốc","Thu","Hữu","Ngọc","Anh"],TEN=["An","Bình","Chi","Dũng","Giang","Hà","Hương","Khoa","Linh","Nam","Phúc","Quân","Sơn","Trang","Vy","Yến"];
+const pick=(r,a)=>a[Math.floor(r()*a.length)];
+const dstr=off=>{const d=new Date(2026,10,18);d.setDate(d.getDate()-off);return String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0")+"/"+d.getFullYear()};
+
+const PEOPLE=(()=>{
+  const r=rng(2026),out=[];let n=0;
+  for(const [stage,,cnt] of STAGES)for(let i=0;i<cnt;i++){
+    n++;const name=pick(r,HO)+" "+pick(r,DEM)+" "+pick(r,TEN);
+    const cr=r(),consent=cr<.6?"full":cr<.85?"partial":"none";
+    let stays=0,nights=0,sectors=["Novaland"],ev=[];const d0=()=>Math.floor(5+r()*60);
+    if(stage==="discover"){ev.push({d:dstr(40+d0()),co:"Novaland",t:"Truy cập website, xem dự án BĐS nghỉ dưỡng"},{d:dstr(d0()),co:"Novaland",t:"Tham quan nhà mẫu"})}
+    if(stage==="bought"){ev.push({d:dstr(200+d0()),co:"Novaland",t:"Ký thỏa thuận đặt cọc"},{d:dstr(120+d0()),co:"Novaland",t:"Ký hợp đồng mua bán"},{d:dstr(d0()),co:"Novaland",t:"Thanh toán đợt "+(1+Math.floor(r()*3))})}
+    if(stage==="resident"){stays=r()<.6?0:1+Math.floor(r()*2);sectors.push("Nova Services");ev.push({d:dstr(300+d0()),co:"Novaland",t:"Nhận bàn giao căn hộ"},{d:dstr(60),co:"Nova Services",t:"Thanh toán phí quản lý"},{d:dstr(30),co:"Nova Services",t:"Đặt tiện ích hồ bơi"});if(r()<.5){sectors.push("Nova F&B");ev.push({d:dstr(15),co:"Nova F&B",t:"Dùng bữa tại nhà hàng khu đô thị"})}
+      for(let k=0;k<stays;k++)ev.push({d:dstr(120+k*50+d0()),co:"NovaWorld",t:"Lưu trú 2 đêm tại NovaWorld"});if(stays)sectors.push("NovaWorld")}
+    if(stage==="guest"){stays=1+Math.floor(r()*4);sectors=["NovaWorld","Nova F&B"];for(let k=0;k<stays;k++)ev.push({d:dstr(30+k*70+d0()),co:"NovaWorld",t:"Lưu trú "+(1+Math.floor(r()*3))+" đêm"});ev.push({d:dstr(20),co:"Nova F&B",t:"Chi tiêu F&B trong kỳ lưu trú"})}
+    if(stage==="owner"){nights=r()<.4?0:1+Math.floor(r()*8);stays=nights?1:0;sectors=["Novaland","NovaWorld"];ev.push({d:dstr(500+d0()),co:"Novaland",t:"Ký hợp đồng BĐS nghỉ dưỡng"},{d:dstr(200),co:"Novaland",t:"Nhận bàn giao"});if(nights)ev.push({d:dstr(60+d0()),co:"NovaWorld",t:"Dùng "+nights+" đêm nghỉ của chủ sở hữu"})}
+    ev.sort((a,b)=>b.d.split("/").reverse().join("").localeCompare(a.d.split("/").reverse().join("")));
+    out.push({id:"KH-"+String(n).padStart(4,"0"),name,phone:"09"+String(Math.floor(r()*1e8)).padStart(8,"0"),stage,consent,stays,nights,sectors,ev});
+  }
+  return out;
+})();
+const maskName=n=>n.split(" ").map((w,i)=>i===0?w:w[0]+"***").join(" ");
+const maskPhone=p=>p.slice(0,2)+"** *** "+p.slice(-3);
+
+const RULES=[
+ {id:"R1",name:"Cư dân chưa nghỉ dưỡng",test:p=>p.stage==="resident"&&p.stays===0,offer:"Ưu đãi đêm nghỉ NovaWorld giảm 20%",why:p=>"Là cư dân đã nhận bàn giao, chưa có lần lưu trú nào tại NovaWorld trong 12 tháng. Hành vi lặp lại (phí quản lý) cho thấy khách còn hoạt động."},
+ {id:"R2",name:"Khách lưu trú ≥ 2 lần, chưa sở hữu",test:p=>p.stage==="guest"&&p.stays>=2,offer:"Mời tham quan BĐS nghỉ dưỡng và ưu tiên chọn căn",why:p=>`Đã lưu trú ${p.stays} lần trong 12 tháng và chưa sở hữu BĐS nghỉ dưỡng. Tần suất quay lại cao.`},
+ {id:"R3",name:"Chủ sở hữu chưa dùng đêm nghỉ",test:p=>p.stage==="owner"&&p.nights===0,offer:"Nhắc dùng đêm nghỉ của chủ sở hữu và mời giới thiệu bạn bè",why:p=>"Là chủ sở hữu nhưng chưa dùng đêm nghỉ nào trong 12 tháng. Rủi ro giảm gắn kết."},
+ {id:"R4",name:"Đã mua, chờ bàn giao",test:p=>p.stage==="bought",offer:"Gói nội thất và dịch vụ vận hành trước bàn giao",why:p=>"Đã ký hợp đồng và đang thanh toán theo đợt, chưa nhận bàn giao. Thời điểm phù hợp giới thiệu gói hoàn thiện."},
+ {id:"R5",name:"Khám phá, mới tham quan",test:p=>p.stage==="discover",offer:"Mời lưu trú thử 1 đêm tại NovaWorld",why:p=>"Đã xem dự án và tham quan nhà mẫu nhưng chưa đặt cọc. Lưu trú thử giúp hình dung sản phẩm."}
+];
+const ruleOf=p=>RULES.find(r=>r.test(p));
+const byId=id=>PEOPLE.find(p=>p.id===id);
+
+const S={view:"overview",stage:"all",seg:"all",shown:15,pid:null,reveal:{},decided:{},log:[],clock:0,toast:"",loading:false,camp:{rule:"R1",result:null},nboFilter:"all"};
+function addLog(a){S.clock++;const m=String(S.clock).padStart(2,"0");S.log.unshift({t:"18/11/2026 09:"+m,a})}
+function toast(m){S.toast=m;render();clearTimeout(toast.t);toast.t=setTimeout(()=>{S.toast="";render()},2500)}
+function list(){return PEOPLE.filter(p=>(S.stage==="all"||p.stage===S.stage)&&(S.seg==="all"||ruleOf(p)?.id===S.seg))}
+const badge=c=>`<span class="badge ${CONSENT[c][1]}">${CONSENT[c][0]}</span>`;
+function nm(p){return S.reveal[p.id]?esc(p.name):`<span class="mask">${esc(maskName(p.name))}</span>`}
+
+function vOverview(){
+  const total=PEOPLE.length,max=Math.max(...STAGES.map(s=>s[2]));
+  const full=PEOPLE.filter(p=>p.consent==="full").length;
+  const pend=PEOPLE.filter(p=>ruleOf(p)&&!S.decided[p.id]).length;
+  const appr=Object.values(S.decided).filter(x=>x==="approved").length;
+  const seg1=PEOPLE.filter(RULES[0].test).length;
+  return `<h1>Bảng điều khiển CRM</h1><div class="kpis">
+   <div class="card kpi"><b id="k-total">${total}</b><span class="muted">Hồ sơ 360</span></div>
+   <div class="card kpi"><b id="k-full">${full}</b><span class="muted">Đồng ý liên ngành</span></div>
+   <div class="card kpi"><b id="k-pend">${pend}</b><span class="muted">Gợi ý chờ duyệt</span></div>
+   <div class="card kpi"><b id="k-appr">${appr}</b><span class="muted">Đã phê duyệt</span></div></div>
+  <div class="cols"><div class="card"><h2 style="margin-top:0">Phễu vòng đời</h2><p class="muted">Bấm một giai đoạn để xem danh sách khách.</p>
+   ${STAGES.map(s=>{const c=PEOPLE.filter(p=>p.stage===s[0]).length;return `<button class="fun" data-stage="${s[0]}" aria-label="${s[1]}: ${c} khách"><div class="bar" style="width:${Math.max(12,c/max*100)}%">${c}</div><small>${s[1]}</small></button>`}).join("")}</div>
+  <div class="card"><h2 style="margin-top:0">Tệp ưu tiên</h2>
+   <button class="li" data-seg="R1"><span><strong>Cư dân chưa nghỉ dưỡng</strong><br><span class="muted">Cơ hội cross-sell BĐS sang nghỉ dưỡng</span></span><span class="badge b-info">${seg1} khách</span></button>
+   ${RULES.slice(1).map(r=>`<button class="li" data-seg="${r.id}"><span><strong>${r.name}</strong></span><span class="badge b-info">${PEOPLE.filter(r.test).length} khách</span></button>`).join("")}
+   <p class="muted" style="margin-top:10px">Số trong phễu, danh sách và tệp đều tính từ cùng một tập 200 hồ sơ.</p></div></div>`;
+}
+function vList(){
+  const l=list(), segName=S.seg==="all"?"":RULES.find(r=>r.id===S.seg).name;
+  return `<h1>Khách hàng</h1>
+  <label class="field"><span>Giai đoạn vòng đời</span><select id="stagesel">${[["all","Tất cả"],...STAGES.map(s=>[s[0],s[1]])].map(o=>`<option value="${o[0]}" ${S.stage===o[0]?"selected":""}>${o[1]}</option>`).join("")}</select></label>
+  <label class="field"><span>Tệp theo quy tắc</span><select id="segsel"><option value="all">Tất cả</option>${RULES.map(r=>`<option value="${r.id}" ${S.seg===r.id?"selected":""}>${r.name}</option>`).join("")}</select></label>
+  <p class="muted" id="count" aria-live="polite">${l.length} khách${segName?" thuộc tệp \""+segName+"\"":""}</p>
+  <div class="card">${l.length?l.slice(0,S.shown).map(p=>`<button class="li" data-open="${p.id}"><span>${nm(p)}<br><span class="muted">${p.id} · ${STN[p.stage]}</span></span>${badge(p.consent)}</button>`).join(""):`<div class="empty"><strong>Không có khách phù hợp</strong><br>Hãy đổi giai đoạn hoặc tệp lọc.</div>`}
+  ${l.length>S.shown?`<button class="btn sec" style="width:100%;margin-top:8px" data-act="more">Xem thêm (${l.length-S.shown})</button>`:""}</div>`;
+}
+function vProfile(){
+  const p=byId(S.pid);if(!p)return `<div class="empty">Chưa chọn khách.</div>`;
+  const rule=ruleOf(p),dec=S.decided[p.id],can=p.consent==="full";
+  const purposes=[["Dịch vụ vận hành",p.consent!=="none"],["Gợi ý ưu đãi liên ngành",p.consent==="full"],["Tiếp thị qua SMS/Zalo",p.consent==="full"&&p.id.charCodeAt(5)%2===0]];
+  return `<button class="btn ghost" data-view="list">Quay lại danh sách</button>
+  <div class="card" style="margin-top:12px"><div class="row" style="align-items:flex-start"><div><h1 style="margin:0">${nm(p)}</h1><div class="muted">${p.id} · SĐT ${S.reveal[p.id]?p.phone:`<span class="mask">${maskPhone(p.phone)}</span>`}</div></div><span class="badge b-info">${STN[p.stage]}</span></div>
+   <button class="btn sec" style="margin-top:8px" data-reveal="${p.id}">${S.reveal[p.id]?"Ẩn thông tin định danh":"Hiện thông tin định danh (ghi nhật ký)"}</button>
+   <p class="muted" style="margin-top:10px">Mảng đã dùng: ${p.sectors.join(", ")}</p></div>
+  <div class="cols"><div><div class="card"><h2 style="margin-top:0">Đồng ý theo mục đích</h2>${purposes.map(x=>`<div class="row" style="padding:6px 0"><span>${x[0]}</span><span class="badge ${x[1]?"b-ok":"b-bad"}">${x[1]?"Có":"Không"}</span></div>`).join("")}</div>
+  <div class="card" id="nbo-card"><h2 style="margin-top:0">Gợi ý hành động tiếp theo</h2>
+   ${rule?`<div><strong>${rule.offer}</strong></div><p><span class="muted">Quy tắc ${rule.id} (${rule.name}). Lý do:</span><br><span id="why">${rule.why(p)}</span></p>
+    ${dec?`<span class="badge ${dec==="approved"?"b-ok":"b-wait"}">${dec==="approved"?"Đã phê duyệt":"Đã bỏ qua"}</span>`:
+     !can?`<p class="err" role="alert">Không thể gửi: khách chưa đồng ý nhận ưu đãi liên ngành.</p><button class="btn bad" data-decide="skip|${p.id}">Bỏ qua</button>`:
+     `<div class="row" style="justify-content:flex-start"><button class="btn" data-decide="approve|${p.id}">Phê duyệt</button><button class="btn bad" data-decide="skip|${p.id}">Bỏ qua</button></div>`}`:`<div class="muted">Chưa có quy tắc phù hợp với hồ sơ này.</div>`}</div></div>
+  <div class="card"><h2 style="margin-top:0">Dòng thời gian xuyên ngành</h2><div class="tl">${p.ev.map(e=>`<div><strong>${esc(e.t)}</strong><br><span class="muted">${e.d} · ${e.co}</span></div>`).join("")}</div></div></div>`;
+}
+function vNbo(){
+  const l=PEOPLE.filter(p=>ruleOf(p)&&(S.nboFilter==="all"||ruleOf(p).id===S.nboFilter));
+  const pend=l.filter(p=>!S.decided[p.id]);
+  return `<h1>Gợi ý ưu đãi (NBO)</h1><label class="field"><span>Quy tắc</span><select id="nbosel"><option value="all">Tất cả</option>${RULES.map(r=>`<option value="${r.id}" ${S.nboFilter===r.id?"selected":""}>${r.id} · ${r.name}</option>`).join("")}</select></label>
+  <p class="muted">${pend.length} gợi ý chờ duyệt. Hiển thị 12 đầu tiên.</p>
+  ${pend.length?pend.slice(0,12).map(p=>{const r=ruleOf(p);return `<div class="card"><div class="row" style="align-items:flex-start"><div><strong>${nm(p)}</strong> <span class="muted">${p.id}</span><div>${r.offer}</div></div>${badge(p.consent)}</div>
+   <p class="muted"><strong>Lý do:</strong> ${r.why(p)}</p>
+   ${p.consent==="full"?`<div class="row" style="justify-content:flex-start"><button class="btn" data-decide="approve|${p.id}">Phê duyệt</button><button class="btn bad" data-decide="skip|${p.id}">Bỏ qua</button><button class="btn sec" data-open="${p.id}">Hồ sơ</button></div>`:`<p class="err">Thiếu đồng ý, không thể gửi ưu đãi.</p><div class="row" style="justify-content:flex-start"><button class="btn bad" data-decide="skip|${p.id}">Bỏ qua</button><button class="btn sec" data-open="${p.id}">Hồ sơ</button></div>`}</div>`}).join(""):`<div class="empty"><strong>Đã xử lý hết gợi ý</strong><br>Không còn gợi ý chờ duyệt trong quy tắc này.</div>`}`;
+}
+function vCamp(){
+  if(S.loading)return `<div class="spin" role="status" aria-label="Đang tính"></div><p class="empty">Đang tính tệp khách...</p>`;
+  const r=RULES.find(x=>x.id===S.camp.rule),all=PEOPLE.filter(r.test),ok=all.filter(p=>p.consent==="full"),part=all.filter(p=>p.consent==="partial").length,none=all.filter(p=>p.consent==="none").length;
+  const res=S.camp.result;
+  return `<h1>Mô phỏng chiến dịch</h1><label class="field"><span>Chọn tệp khách theo điều kiện</span><select id="campsel">${RULES.map(x=>`<option value="${x.id}" ${S.camp.rule===x.id?"selected":""}>${x.name}</option>`).join("")}</select></label>
+  <div class="card"><div class="muted">Ưu đãi: ${r.offer}</div>
+   <div class="kpis" style="margin-top:8px"><div class="card kpi" style="box-shadow:none;background:#f4f7f8"><b id="c-all">${all.length}</b><span class="muted">Khớp điều kiện</span></div>
+   <div class="card kpi" style="box-shadow:none;background:var(--ok-soft)"><b id="c-ok">${ok.length}</b><span class="muted">Đủ điều kiện gửi</span></div>
+   <div class="card kpi" style="box-shadow:none;background:var(--err-soft)"><b id="c-ex">${all.length-ok.length}</b><span class="muted">Bị loại (thiếu đồng ý)</span></div></div>
+   <p class="muted">Loại vì chỉ đồng ý dịch vụ: ${part} · Loại vì chưa/đã rút đồng ý: ${none}. Chỉ khách có đồng ý liên ngành mới nhận chiến dịch.</p>
+   <button class="btn" data-act="sendcamp" ${ok.length?"":"disabled"}>Mô phỏng gửi cho ${ok.length} khách</button>${ok.length?"":`<p class="err">Không có khách đủ điều kiện trong tệp này.</p>`}</div>
+  ${res?`<div class="card" id="camp-res" role="status"><h3>Kết quả mô phỏng</h3><p>Đã gửi <strong>${res.sent}</strong> khách, ước tính mở <strong>${res.open}</strong>, đổi ưu đãi <strong>${res.redeem}</strong> (số ước lượng giả lập, không phải benchmark thật). Đã loại ${res.excluded} khách thiếu đồng ý.</p></div>`:""}`;
+}
+function vLog(){
+  return `<h1>Nhật ký hành động</h1><div class="card">${S.log.length?S.log.map(l=>`<div class="logrow"><span class="muted">${l.t}</span><br>${l.a}</div>`).join(""):`<div class="empty">Chưa có hành động nào. Phê duyệt gợi ý hoặc mô phỏng chiến dịch để ghi nhật ký.</div>`}</div>`;
+}
+const TABS=[["overview","Tổng quan"],["list","Khách hàng"],["nbo","Gợi ý NBO"],["camp","Chiến dịch"],["log","Nhật ký"]];
+const V={overview:vOverview,list:vList,profile:vProfile,nbo:vNbo,camp:vCamp,log:vLog};
+function render(){
+  const cur=S.view==="profile"?"list":S.view, a=document.activeElement&&document.activeElement.id;
+  document.getElementById("root").innerHTML=`<header class="top"><div class="t"><strong>Nova Customer 360</strong><span class="muted" style="color:#d6edf3">Nhân viên CRM (demo)</span></div>
+  <nav class="tabs" aria-label="Điều hướng">${TABS.map(t=>`<button data-view="${t[0]}" ${cur===t[0]?'aria-current="page"':""}>${t[1]}${t[0]==="log"&&S.log.length?` (${S.log.length})`:""}</button>`).join("")}</nav></header>
+  <main id="main" tabindex="-1">${V[S.view]()}</main>${S.toast?`<div class="toast" role="status">${S.toast}</div>`:""}`;
+  if(a){const e=document.getElementById(a);if(e)e.focus()}
+}
+function decide(act,id){
+  const p=byId(id),r=ruleOf(p);
+  if(act==="approve"){if(p.consent!=="full")return toast("Không thể phê duyệt: thiếu đồng ý");S.decided[id]="approved";addLog(`Phê duyệt gửi "${r.offer}" cho ${id} (quy tắc ${r.id})`);toast("Đã phê duyệt, ghi nhật ký")}
+  else{S.decided[id]="skipped";addLog(`Bỏ qua gợi ý "${r.offer}" cho ${id}`);toast("Đã bỏ qua gợi ý")}
+}
+document.addEventListener("click",e=>{
+  const el=e.target.closest("[data-view],[data-stage],[data-seg],[data-open],[data-reveal],[data-decide],[data-act]");if(!el)return;const d=el.dataset;
+  if(d.view){S.view=d.view;return render()}
+  if(d.stage){S.stage=d.stage;S.seg="all";S.shown=15;S.view="list";return render()}
+  if(d.seg){S.seg=d.seg;S.stage="all";S.shown=15;S.view="list";return render()}
+  if(d.open){S.pid=d.open;S.view="profile";window.scrollTo(0,0);return render()}
+  if(d.reveal){const id=d.reveal;S.reveal[id]=!S.reveal[id];addLog((S.reveal[id]?"Hiện":"Ẩn")+" thông tin định danh của "+id);return render()}
+  if(d.decide){const[a,id]=d.decide.split("|");return decide(a,id)}
+  if(d.act==="more"){S.shown+=15;return render()}
+  if(d.act==="sendcamp"){const r=RULES.find(x=>x.id===S.camp.rule),all=PEOPLE.filter(r.test),ok=all.filter(p=>p.consent==="full");
+    S.loading=true;render();setTimeout(()=>{S.loading=false;S.camp.result={sent:ok.length,excluded:all.length-ok.length,open:Math.round(ok.length*.42),redeem:Math.round(ok.length*.12)};
+      addLog(`Mô phỏng chiến dịch "${r.offer}": gửi ${ok.length}, loại ${all.length-ok.length} khách thiếu đồng ý`);render()},900)}
+});
+document.addEventListener("change",e=>{
+  const i=e.target.id;
+  if(i==="stagesel"){S.stage=e.target.value;S.shown=15;render()}
+  if(i==="segsel"){S.seg=e.target.value;S.shown=15;render()}
+  if(i==="nbosel"){S.nboFilter=e.target.value;render()}
+  if(i==="campsel"){S.camp.rule=e.target.value;S.camp.result=null;render()}
+});
+render();
+</script>
+</body>
+</html>

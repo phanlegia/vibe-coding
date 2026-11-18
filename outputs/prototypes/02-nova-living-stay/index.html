@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nova Living &amp; Stay - Prototype</title>
+<style>
+:root{
+  --bg:#eef2f4; --surface:#fff; --ink:#18242e; --muted:#566370; --line:#d5dde2;
+  --brand:#0a5c73; --brand-ink:#fff; --brand-soft:#e1f1f5; --gold:#f2b84b; --gold-ink:#3b2a00;
+  --ok:#14703c; --ok-soft:#e1f5e8; --warn:#8a5a00; --warn-soft:#fff3d6; --err:#b3261e; --err-soft:#fde8e6;
+  --r:14px; --tap:44px; --shadow:0 6px 24px rgba(20,40,60,.12);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.45}
+#app{max-width:430px;min-height:100dvh;margin:0 auto;background:var(--bg);position:relative;display:flex;flex-direction:column}
+@media(min-width:500px){#app{margin:16px auto;min-height:calc(100dvh - 32px);border-radius:24px;box-shadow:var(--shadow);overflow:hidden}}
+button,input,select,textarea{font:inherit;color:inherit}
+button{min-height:var(--tap);min-width:var(--tap);cursor:pointer}
+:focus-visible{outline:3px solid #1b7fd1;outline-offset:2px}
+.demo-banner{background:var(--warn-soft);color:var(--warn);font-size:13px;padding:6px 16px;text-align:center;border-bottom:1px solid #ecd9a6}
+header.top{background:var(--brand);color:#fff;padding:12px 16px}
+.pts-chip{background:var(--gold);color:var(--gold-ink);border-radius:99px;padding:4px 12px;font-weight:700;font-size:14px}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:rgba(255,255,255,.18);border-radius:12px;padding:4px;margin-top:10px}
+.seg button{border:0;background:transparent;color:#fff;border-radius:9px;font-weight:600}
+.seg button[aria-pressed=true]{background:#fff;color:var(--brand)}
+main{flex:1;padding:16px 16px 88px;overflow-y:auto}
+h1{font-size:20px;margin:0 0 4px} h2{font-size:17px;margin:18px 0 8px} h3{font-size:16px;margin:0}
+p{margin:4px 0 8px} .muted{color:var(--muted);font-size:14px}
+.card{background:var(--surface);border-radius:var(--r);padding:14px;box-shadow:0 1px 3px rgba(20,40,60,.08);margin-bottom:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:12px;padding:10px 16px;font-weight:600;background:var(--brand);color:var(--brand-ink)}
+.btn.block{width:100%}.btn.sec{background:var(--brand-soft);color:var(--brand)}
+.btn.ghost{background:transparent;color:var(--brand);border:1.5px solid var(--brand)}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.field{display:block;margin:10px 0}.field span{display:block;font-size:14px;font-weight:600;margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;min-height:48px;padding:10px 12px;border:1.5px solid #8a98a4;border-radius:12px;background:#fff}
+.err{color:var(--err);font-size:14px;font-weight:600;margin-top:6px}
+.badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:700}
+.b-ok{background:var(--ok-soft);color:var(--ok)}.b-bad{background:var(--err-soft);color:var(--err)}.b-wait{background:var(--warn-soft);color:var(--warn)}.b-info{background:#e3ecff;color:#1f3f9a}
+.chip{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600;background:var(--brand-soft);color:var(--brand)}
+.row{display:flex;gap:12px;align-items:center;justify-content:space-between}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+nav.tabs{position:sticky;bottom:0;display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border-top:1px solid var(--line);margin-top:auto}
+nav.tabs button{border:0;background:none;padding:6px 2px;font-size:12px;color:var(--muted);min-height:56px}
+nav.tabs button[aria-current=page]{color:var(--brand);font-weight:700;box-shadow:inset 0 3px 0 var(--brand)}
+.sheet-bg{position:absolute;inset:0;background:rgba(10,20,30,.5);display:flex;align-items:flex-end;z-index:10}
+.sheet{background:#fff;width:100%;border-radius:22px 22px 0 0;padding:20px 16px 24px;max-height:92%;overflow:auto}
+.toast{position:absolute;left:16px;right:16px;bottom:76px;background:#18242e;color:#fff;padding:12px 16px;border-radius:12px;z-index:20}
+.spin{width:36px;height:36px;border:4px solid var(--brand-soft);border-top-color:var(--brand);border-radius:50%;animation:sp 1s linear infinite;margin:30px auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.spin{animation-duration:3s}}
+.empty{text-align:center;padding:24px 12px;color:var(--muted)}
+.qr{display:grid;grid-template-columns:repeat(21,1fr);width:200px;height:200px;margin:12px auto;border:8px solid #fff;outline:1px solid var(--line)}
+.qr i{background:#fff}.qr i.k{background:#111}
+.map{width:100%;border-radius:12px;background:#d9efe6}
+.map button{cursor:pointer}
+.pill{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px}
+.pill button{white-space:nowrap;border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:6px 14px}
+.pill button[aria-pressed=true]{background:var(--brand);color:#fff;border-color:var(--brand)}
+.slot{border:1.5px solid var(--brand);background:#fff;color:var(--brand);border-radius:10px;padding:6px 12px;margin:4px 6px 4px 0;font-weight:600}
+.slot[disabled]{border-color:var(--line);color:#6b7782;background:#f1f4f6;text-decoration:line-through}
+.slot.sel{background:var(--brand);color:#fff}
+.step{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div id="app"><div class="demo-banner">Prototype: dữ liệu giả lập, tên công ty thành viên là giả định</div><div id="root" style="display:flex;flex-direction:column;flex:1"></div></div>
+<script>
+"use strict";
+const nf=n=>n.toLocaleString("vi-VN"), vnd=n=>nf(n)+"đ";
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const PT_VND=100; // 1 điểm = 100đ khi thanh toán
+const EARN_RATE=10000; // 1 điểm / 10.000đ
+
+const S={
+  mode:"resident", tab:{resident:"bills",guest:"stay"}, points:3200, loading:false, toast:"", sheet:null,
+  bills:[
+    {id:"B1",t:"Phí quản lý tháng 10/2026",amt:1850000,due:"10/11/2026",st:"overdue",co:"Novaland - Ban quản lý"},
+    {id:"B2",t:"Phí quản lý tháng 11/2026",amt:1850000,due:"10/12/2026",st:"unpaid",co:"Novaland - Ban quản lý"},
+    {id:"B0",t:"Phí quản lý tháng 09/2026",amt:1850000,due:"10/10/2026",st:"paid",co:"Novaland - Ban quản lý"}
+  ],
+  issues:[
+    {id:"S1",t:"Đèn hành lang tầng 12 chập chờn",st:"new",d:"17/11/2026",img:false},
+    {id:"S2",t:"Thang máy B rung khi di chuyển",st:"doing",d:"14/11/2026",img:false},
+    {id:"S3",t:"Rò nước ống thoát ban công",st:"done",d:"05/11/2026",img:false},
+    {id:"S4",t:"Cổng bãi xe không nhận thẻ",st:"doing",d:"12/11/2026",img:false}
+  ],
+  issueFilter:"all",
+  amenities:[
+    {id:"A1",n:"Hồ bơi",slots:["06:00","08:00","17:00","19:00"],full:["08:00"]},
+    {id:"A2",n:"Phòng họp cộng đồng",slots:["09:00","14:00","16:00"],full:[]},
+    {id:"A3",n:"Sân tennis",slots:["06:00","07:00","18:00"],full:["06:00","07:00","18:00"]},
+    {id:"A4",n:"Phòng gym",slots:["05:30","12:00","20:00"],full:[]},
+    {id:"A5",n:"BBQ ngoài trời",slots:["17:30","19:30"],full:["19:30"]},
+    {id:"A6",n:"Phòng trẻ em",slots:["09:00","15:00"],full:[]}
+  ],
+  booked:[], amSel:{},
+  news:[{t:"Bảo trì hồ bơi ngày 22/11",b:"Hồ bơi đóng cửa 08:00-12:00 để bảo trì định kỳ."},{t:"Lịch phun khử khuẩn khu A",b:"Thực hiện ngày 20/11, vui lòng đóng cửa sổ."},{t:"Chợ phiên cuối tuần",b:"Sáng Chủ nhật tại quảng trường trung tâm."}],
+  room:{code:"NW-2026-0457",name:"Gia đình Hà",room:"Villa Biển 08",nights:"17/11 - 20/11/2026",checkedIn:false,
+    charges:[{t:"Tiền phòng 3 đêm",amt:5400000}], orders:[]},
+  cart:{}, mapSel:null, usePts:0, payMethod:"qr"
+};
+const MENU=[
+ ["Phở bò đặc biệt",85000],["Cơm gà Hội An",75000],["Mì Quảng tôm thịt",70000],["Bánh mì que",35000],["Gỏi cuốn tôm",60000],
+ ["Hải sản nướng set 2",650000],["Cá nướng muối ớt",320000],["Salad nhiệt đới",90000],["Cà phê sữa đá",45000],["Nước ép dưa hấu",50000]
+];
+const BILL_ST={paid:["Đã thanh toán","b-ok"],unpaid:["Chưa đến hạn","b-info"],overdue:["Quá hạn","b-bad"]};
+const ISS_ST={new:["Mới tiếp nhận","b-info"],doing:["Đang xử lý","b-wait"],done:["Hoàn tất","b-ok"]};
+const earnPts=amt=>Math.floor(amt/EARN_RATE);
+const roomTotal=()=>S.room.charges.reduce((s,x)=>s+x.amt,0)+S.room.orders.reduce((s,x)=>s+x.amt,0);
+const wait=(fn,ms=800)=>{S.loading=true;render();setTimeout(()=>{S.loading=false;fn();render()},ms)};
+function toast(m){S.toast=m;render();clearTimeout(toast.t);toast.t=setTimeout(()=>{S.toast="";render()},2600)}
+const tier=()=>S.points>=15000?"Diamond":S.points>=5000?"Gold":"Silver";
+
+function tabsFor(){
+  return S.mode==="resident"?[["bills","Hóa đơn"],["issues","Sự cố"],["amen","Tiện ích"],["news","Bảng tin"],["wallet","Ví điểm"]]
+   :[["stay","Đặt phòng"],["dining","Ăn uống"],["folio","Hóa đơn"],["map","Bản đồ"],["wallet","Ví điểm"]];
+}
+function head(){
+  return `<header class="top"><div class="row"><strong>Nova Living &amp; Stay</strong><span class="pts-chip" id="pts" aria-label="Điểm Nova One">${nf(S.points)} điểm · ${tier()}</span></div>
+  <div class="seg" role="group" aria-label="Chế độ"><button data-mode="resident" aria-pressed="${S.mode==="resident"}">Cư dân</button><button data-mode="guest" aria-pressed="${S.mode==="guest"}">Khách lưu trú</button></div></header>`;
+}
+function nav(){return `<nav class="tabs" aria-label="Điều hướng">${tabsFor().map(t=>`<button data-tab="${t[0]}" ${S.tab[S.mode]===t[0]?'aria-current="page"':""}>${t[1]}</button>`).join("")}</nav>`}
+
+function vBills(){
+  return `<h1>Hóa đơn phí quản lý</h1><p class="muted">Anh Minh · Căn A-12, Aqua City (dữ liệu mẫu)</p>
+  ${S.bills.map(b=>`<div class="card"><div class="row" style="align-items:flex-start"><div><h3>${b.t}</h3><div class="muted">${b.co} · Hạn ${b.due}</div><div style="font-weight:700;margin-top:4px">${vnd(b.amt)}</div></div><span class="badge ${BILL_ST[b.st][1]}" data-bill-status="${b.id}">${BILL_ST[b.st][0]}</span></div>
+  ${b.st!=="paid"?`<button class="btn block" style="margin-top:10px" data-pay-bill="${b.id}">Thanh toán (+${earnPts(b.amt)} điểm)</button>`:""}</div>`).join("")}`;
+}
+function vIssues(){
+  const f=S.issueFilter, list=S.issues.filter(i=>f==="all"||i.st===f);
+  return `<div class="row"><h1>Báo sự cố</h1><button class="btn" data-act="newissue">Báo mới</button></div>
+  <div class="pill" role="group" aria-label="Lọc sự cố">${[["all","Tất cả"],["new","Mới"],["doing","Đang xử lý"],["done","Hoàn tất"]].map(x=>`<button data-ifilter="${x[0]}" aria-pressed="${f===x[0]}">${x[1]}</button>`).join("")}</div>
+  ${list.length?list.map(i=>`<div class="card"><div class="row" style="align-items:flex-start"><div><h3>${esc(i.t)}</h3><div class="muted">Mã ${i.id} · ${i.d}${i.img?" · có ảnh":""}</div></div><span class="badge ${ISS_ST[i.st][1]}">${ISS_ST[i.st][0]}</span></div>
+  ${i.st!=="done"?`<button class="btn sec" style="margin-top:8px" data-adv="${i.id}">Mô phỏng: cập nhật trạng thái</button>`:""}</div>`).join(""):`<div class="empty"><strong>Không có sự cố ở trạng thái này</strong><br>Bấm "Báo mới" để gửi yêu cầu tới ban quản lý.</div>`}`;
+}
+function vAmen(){
+  return `<h1>Đặt tiện ích</h1>${S.amenities.map(a=>{const sel=S.amSel[a.id];const allFull=a.slots.every(s=>a.full.includes(s));
+  return `<div class="card"><h3>${a.n}</h3>${allFull?`<p class="muted">Hôm nay đã kín lịch. Hãy thử tiện ích khác hoặc ngày mai.</p>`:`<div role="group" aria-label="Khung giờ ${a.n}">${a.slots.map(s=>{const bk=S.booked.some(b=>b.id===a.id&&b.slot===s);return `<button class="slot ${sel===s?"sel":""}" data-slot="${a.id}|${s}" ${a.full.includes(s)||bk?"disabled":""}>${s}${bk?" (đã đặt)":""}</button>`}).join("")}</div>
+  <button class="btn block" style="margin-top:6px" data-book="${a.id}" ${sel?"":"disabled"}>Đặt lịch</button>`}</div>`}).join("")}
+  ${S.booked.length?`<h2>Lịch đã đặt</h2><div class="card">${S.booked.map(b=>`<div class="step"><span>${b.n}</span><strong>${b.slot} hôm nay</strong></div>`).join("")}</div>`:""}`;
+}
+function vNews(){return `<h1>Bảng tin cộng đồng</h1>${S.news.map(n=>`<div class="card"><h3>${n.t}</h3><p>${n.b}</p></div>`).join("")}`}
+function vWallet(){
+  const t=tier();
+  return `<h1>Ví điểm Nova One</h1><div class="card"><div class="muted">Số dư</div><div style="font-size:36px;font-weight:800">${nf(S.points)} điểm</div><div>Hạng <strong>${t}</strong> · 1 điểm = ${PT_VND}đ khi thanh toán · tích 1 điểm / ${nf(EARN_RATE)}đ</div></div>
+  <p class="muted">Ví này dùng chung với ứng dụng Nova One, chuyển chế độ Cư dân/Khách không làm mất điểm.</p>`;
+}
+function vStay(){
+  const r=S.room;
+  return `<h1>Đặt phòng của bạn</h1><div class="card"><div class="row" style="align-items:flex-start"><div><h3>${r.room}</h3><div class="muted">NovaWorld Phan Thiết · ${r.nights}</div><div class="muted">Mã đặt phòng: ${r.code} · ${r.name}</div></div><span class="badge ${r.checkedIn?"b-ok":"b-wait"}" id="stay-st">${r.checkedIn?"Đã check-in":"Chờ check-in"}</span></div></div>
+  <div class="card" style="text-align:center"><h3>Check-in số</h3><p class="muted">${r.checkedIn?"Quét mã này tại cửa phòng (mô phỏng) hoặc gọi lễ tân.":"Xuất trình mã QR mô phỏng cho lễ tân hoặc kiosk."}</p>${qr()}
+  ${r.checkedIn?`<div class="b-ok badge">Phòng đã mở khóa số</div>`:`<button class="btn block" data-act="checkin">Check-in ngay</button>`}</div>`;
+}
+function qr(){
+  let s=7,cells="";for(let y=0;y<21;y++)for(let x=0;x<21;x++){
+    const fin=(x<7&&y<7)||(x>13&&y<7)||(x<7&&y>13);let k;
+    if(fin){const lx=x%14,ly=y%14;k=(lx===0||lx===6||ly===0||ly===6||(lx>1&&lx<5&&ly>1&&ly<5))}
+    else{s=(s*1103515245+12345)&0x7fffffff;k=(s>>8)%2===0}
+    cells+=`<i class="${k?"k":""}"></i>`}
+  return `<div class="qr" role="img" aria-label="Mã QR check-in mô phỏng">${cells}</div>`;
+}
+function vDining(){
+  const items=Object.entries(S.cart).filter(([,q])=>q>0), tot=items.reduce((s,[i,q])=>s+MENU[i][1]*q,0);
+  return `<h1>Đặt đồ ăn tại phòng</h1><p class="muted">Nhà hàng Biển Xanh (Nova F&amp;B, tên giả định)</p>
+  ${MENU.map((m,i)=>`<div class="card"><div class="row"><div><h3>${m[0]}</h3><div class="muted">${vnd(m[1])}</div></div>
+  <div class="row" style="gap:6px"><button class="btn sec" data-qty="${i}|-1" aria-label="Bớt ${m[0]}">−</button><strong aria-live="polite" style="min-width:20px;text-align:center">${S.cart[i]||0}</strong><button class="btn" data-qty="${i}|1" aria-label="Thêm ${m[0]}">+</button></div></div></div>`).join("")}
+  <div class="card" style="position:sticky;bottom:8px;box-shadow:var(--shadow)">${items.length?`<div class="row"><strong>${items.reduce((s,[,q])=>s+q,0)} món · ${vnd(tot)}</strong><button class="btn" data-act="order">Gửi order</button></div>`:`<div class="muted">Giỏ trống. Chọn món để thêm vào hóa đơn phòng.</div>`}</div>`;
+}
+function vFolio(){
+  const r=S.room, tot=roomTotal();
+  const rows=[...r.charges,...r.orders];
+  return `<h1>Hóa đơn phòng</h1><div class="card">${rows.map(x=>`<div class="step"><span>${esc(x.t)}</span><span>${vnd(x.amt)}</span></div>`).join("")}
+  <div class="row" style="margin-top:10px"><strong>Cần thanh toán</strong><strong id="folio-total">${vnd(tot)}</strong></div></div>
+  ${r.paid?`<div class="card"><span class="badge b-ok">Đã thanh toán</span><p class="muted">${r.paid}</p></div>`:`<button class="btn block" data-act="payfolio">Thanh toán</button>`}
+  ${!r.orders.length?`<p class="muted" style="margin-top:12px">Chưa có món gọi thêm. Vào mục Ăn uống để đặt.</p>`:""}`;
+}
+function vMap(){
+  const pts=[["Sảnh đón khách",60,90,"Lễ tân, check-in, hỗ trợ 24/7"],["Nhà hàng Biển Xanh",150,60,"Mở cửa 06:30-22:00"],["Hồ bơi vô cực",230,110,"Mở cửa 06:00-20:00"],["Bãi biển",120,200,"Khu vực có nhân viên cứu hộ"],["Spa",260,200,"Đặt trước qua lễ tân"],["Villa Biển 08",50,190,"Phòng của bạn"]];
+  return `<h1>Bản đồ khu nghỉ dưỡng</h1><svg class="map" viewBox="0 0 320 250" role="group" aria-label="Bản đồ giả lập">
+   <rect width="320" height="250" fill="#d9efe6"/><path d="M0 225 Q80 190 160 225 T320 215 V250 H0Z" fill="#9fd3e6"/><path d="M30 90 L150 60 L230 110 L260 200 M60 90 L50 190 L120 200" stroke="#fff" stroke-width="8" fill="none"/>
+   ${pts.map((p,i)=>`<g tabindex="0" role="button" data-pt="${i}" aria-label="${p[0]}"><circle cx="${p[1]}" cy="${p[2]}" r="${S.mapSel===i?15:12}" fill="${S.mapSel===i?"#b3261e":"#0a5c73"}" stroke="#fff" stroke-width="3"/><text x="${p[1]}" y="${p[2]+4}" font-size="11" fill="#fff" text-anchor="middle" font-weight="700">${i+1}</text></g>`).join("")}</svg>
+  <div class="card" style="margin-top:10px" aria-live="polite">${S.mapSel!=null?`<h3>${S.mapSel+1}. ${pts[S.mapSel][0]}</h3><p>${pts[S.mapSel][3]}</p>`:`<span class="muted">Chạm vào một điểm trên bản đồ để xem thông tin.</span>`}</div>
+  <div class="card">${pts.map((p,i)=>`<button class="btn ${S.mapSel===i?"":"sec"} block" style="margin-bottom:6px;justify-content:flex-start" data-pt="${i}">${i+1}. ${p[0]}</button>`).join("")}</div>`;
+}
+const VIEWS={bills:vBills,issues:vIssues,amen:vAmen,news:vNews,wallet:vWallet,stay:vStay,dining:vDining,folio:vFolio,map:vMap};
+
+function vSheet(){
+  const s=S.sheet;if(!s)return"";let body="";
+  if(S.loading) body=`<div class="spin" role="status" aria-label="Đang xử lý"></div><p class="empty">Đang xử lý thanh toán...</p>`;
+  else if(s.type==="pay"){
+    const maxPts=s.allowPts?Math.min(S.points,Math.floor(s.amt/PT_VND)):0;
+    const use=Math.min(S.usePts,maxPts), due=s.amt-use*PT_VND;
+    if(s.result==="ok") body=`<h2 style="margin-top:0">Thanh toán thành công</h2><p>${esc(s.title)}</p><p>Đã thanh toán <strong>${vnd(s.paid)}</strong>${s.usedPts?` và dùng <strong>${nf(s.usedPts)} điểm</strong>`:""}.</p><p class="pos" style="color:var(--ok);font-weight:700">+${s.got} điểm Nova One</p><button class="btn block" data-act="close">Xong</button>`;
+    else if(s.result==="fail") body=`<h2 style="margin-top:0">Thanh toán không thành công</h2><p class="err" role="alert">Thẻ đã hết hạn hoặc bị từ chối (mô phỏng). Chưa có khoản tiền nào bị trừ.</p><p class="muted">Hãy thử phương thức khác hoặc thanh toán bằng mã QR.</p><button class="btn block" data-act="retry">Chọn lại phương thức</button><button class="btn ghost block" style="margin-top:8px" data-act="close">Đóng</button>`;
+    else body=`<h2 style="margin-top:0">Thanh toán</h2><p>${esc(s.title)}</p>
+      <div class="step"><span>Số tiền</span><strong>${vnd(s.amt)}</strong></div>
+      ${s.allowPts?`<label class="field"><span>Dùng điểm Nova One (tối đa ${nf(maxPts)} điểm, 1 điểm = ${PT_VND}đ)</span><input id="usepts" type="number" min="0" max="${maxPts}" value="${S.usePts}"></label>${S.usePts>S.points?`<div class="err" role="alert">Bạn chỉ có ${nf(S.points)} điểm.</div>`:S.usePts>maxPts?`<div class="err" role="alert">Số điểm vượt quá số tiền cần trả. Tối đa ${nf(maxPts)} điểm.</div>`:""}`:""}
+      <div class="step"><span>Trừ điểm</span><strong id="sheet-disc">-${vnd(use*PT_VND)}</strong></div>
+      <div class="step"><span>Còn phải trả</span><strong id="sheet-due">${vnd(due)}</strong></div>
+      <label class="field"><span>Phương thức</span><select id="method"><option value="qr" ${S.payMethod==="qr"?"selected":""}>QR ngân hàng (mô phỏng)</option><option value="wallet" ${S.payMethod==="wallet"?"selected":""}>Ví điện tử (mô phỏng)</option><option value="fail" ${S.payMethod==="fail"?"selected":""}>Thẻ hết hạn (mô phỏng lỗi)</option></select></label>
+      <button class="btn block" data-act="confirmpay" ${S.usePts>maxPts?"disabled":""}>Xác nhận thanh toán</button><button class="btn ghost block" style="margin-top:8px" data-act="close">Hủy</button>`;
+  } else if(s.type==="issue"){
+    body=`<h2 style="margin-top:0">Báo sự cố mới</h2><label class="field"><span>Mô tả sự cố</span><textarea id="idesc" rows="3" placeholder="Ví dụ: Đèn cầu thang hỏng"></textarea></label>
+    <label class="field"><span>Ảnh đính kèm (không bắt buộc)</span><input id="iimg" type="file" accept="image/*"></label><div id="iprev"></div>${s.err?`<div class="err" role="alert">${s.err}</div>`:""}
+    <button class="btn block" data-act="sendissue">Gửi báo cáo</button><button class="btn ghost block" style="margin-top:8px" data-act="close">Hủy</button>`;
+  }
+  return `<div class="sheet-bg" data-act="bg"><div class="sheet" role="dialog" aria-modal="true" aria-label="Hộp thoại">${body}</div></div>`;
+}
+function render(){
+  const act=document.activeElement&&document.activeElement.id, sv=act&&document.activeElement.value;
+  const v=VIEWS[S.tab[S.mode]]();
+  document.getElementById("root").innerHTML=head()+`<main id="main" tabindex="-1">${v}</main>`+nav()+vSheet()+(S.toast?`<div class="toast" role="status">${S.toast}</div>`:"");
+  if(act){const e=document.getElementById(act);if(e&&e.tagName==="INPUT"&&e.type==="number"){e.focus()}}
+}
+function openPay(o){S.sheet={type:"pay",...o};S.usePts=0;S.payMethod="qr";render()}
+document.addEventListener("click",e=>{
+  const el=e.target.closest("[data-mode],[data-tab],[data-pay-bill],[data-ifilter],[data-adv],[data-slot],[data-book],[data-qty],[data-pt],[data-act]");
+  if(!el)return;const d=el.dataset;
+  if(d.mode){S.mode=d.mode;return render()}
+  if(d.tab){S.tab[S.mode]=d.tab;return render()}
+  if(d.payBill){const b=S.bills.find(x=>x.id===d.payBill);return openPay({kind:"bill",id:b.id,title:b.t,amt:b.amt,allowPts:false})}
+  if(d.ifilter){S.issueFilter=d.ifilter;return render()}
+  if(d.adv){const i=S.issues.find(x=>x.id===d.adv);i.st=i.st==="new"?"doing":"done";return toast("Sự cố "+i.id+": "+ISS_ST[i.st][0])}
+  if(d.slot){const[a,s]=d.slot.split("|");S.amSel[a]=S.amSel[a]===s?null:s;return render()}
+  if(d.book){const a=S.amenities.find(x=>x.id===d.book);S.booked.push({id:a.id,n:a.n,slot:S.amSel[a.id]});S.amSel[a.id]=null;return toast("Đã đặt "+a.n)}
+  if(d.qty){const[i,dl]=d.qty.split("|");S.cart[i]=Math.max(0,(S.cart[i]||0)+Number(dl));return render()}
+  if(d.pt!==undefined){S.mapSel=Number(d.pt);return render()}
+  switch(d.act){
+   case"newissue":S.sheet={type:"issue"};return render();
+   case"sendissue":{const t=document.getElementById("idesc").value.trim();if(t.length<5){S.sheet.err="Hãy mô tả sự cố ít nhất 5 ký tự.";return render()}
+     const has=!!document.getElementById("iimg").files.length;S.issues.unshift({id:"S"+(S.issues.length+1),t,st:"new",d:"18/11/2026",img:has});S.sheet=null;S.issueFilter="all";return toast("Đã gửi báo cáo, mã S"+S.issues.length)}
+   case"close":S.sheet=null;return render();
+   case"retry":S.sheet.result=null;return render();
+   case"bg":if(e.target===el){S.sheet=null;render()}return;
+   case"checkin":S.room.checkedIn=true;return toast("Check-in thành công");
+   case"order":{const items=Object.entries(S.cart).filter(([,q])=>q>0);items.forEach(([i,q])=>S.room.orders.push({t:q+" x "+MENU[i][0],amt:MENU[i][1]*q}));S.cart={};S.tab.guest="folio";return toast("Đã gửi order, tính vào hóa đơn phòng")}
+   case"payfolio":return openPay({kind:"folio",title:"Hóa đơn phòng "+S.room.room,amt:roomTotal(),allowPts:true});
+   case"confirmpay":{const s=S.sheet;const maxPts=s.allowPts?Math.min(S.points,Math.floor(s.amt/PT_VND)):0;const use=Math.min(S.usePts,maxPts);
+     if(S.payMethod==="fail"){return wait(()=>{s.result="fail"})}
+     wait(()=>{const paid=s.amt-use*PT_VND;S.points-=use;const got=earnPts(paid);S.points+=got;
+       if(s.kind==="bill"){S.bills.find(b=>b.id===s.id).st="paid"}else{S.room.paid="Đã thanh toán "+vnd(paid)+(use?" và "+nf(use)+" điểm":"")}
+       Object.assign(s,{result:"ok",paid,usedPts:use,got})});return}
+  }
+});
+document.addEventListener("input",e=>{
+  if(e.target.id==="usepts"){S.usePts=Math.max(0,parseInt(e.target.value||"0",10)||0);render()}
+  if(e.target.id==="method"){S.payMethod=e.target.value}
+  if(e.target.id==="iimg"){const f=e.target.files[0],p=document.getElementById("iprev");if(f){const u=URL.createObjectURL(f);p.innerHTML=`<img src="${u}" alt="Ảnh xem trước" style="max-width:100%;border-radius:10px">`}}
+});
+document.addEventListener("change",e=>{if(e.target.id==="method")S.payMethod=e.target.value});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"&&S.sheet){S.sheet=null;render()}
+  if((e.key==="Enter"||e.key===" ")&&e.target.dataset&&e.target.dataset.pt!==undefined&&e.target.tagName==="g"){e.preventDefault();S.mapSel=Number(e.target.dataset.pt);render()}
+});
+render();
+</script>
+</body>
+</html>

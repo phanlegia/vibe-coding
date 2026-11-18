@@ -85,10 +85,10 @@ const tierOf = pts => [...TIERS].reverse().find(t=>pts>=t.min);
 const nextTier = pts => TIERS.find(t=>t.min>pts);
 
 const PERSONAS = [
- {id:"lan",name:"Chị Lan (cư dân, chủ sở hữu)",short:"Lan Phạm",phone:"0900 000 001",scale:1,seed:11,note:"hạng Gold"},
+ {id:"lan",name:"Chị Lan (cư dân, chủ sở hữu)",short:"Lan Phạm",phone:"0900 000 001",scale:.65,seed:11,note:"hạng Gold"},
  {id:"minh",name:"Anh Minh (khách thân thiết)",short:"Minh Trần",phone:"0900 000 002",scale:2.7,seed:22,note:"hạng Diamond"},
  {id:"ha",name:"Chị Hà (mới tham gia)",short:"Hà Nguyễn",phone:"0900 000 003",scale:.33,seed:33,note:"hạng Silver"},
- {id:"tuan",name:"Anh Tuấn (chủ sở hữu nghỉ dưỡng)",short:"Tuấn Lê",phone:"0900 000 004",scale:1.45,seed:44,note:"hạng Gold, gần Diamond"},
+ {id:"tuan",name:"Anh Tuấn (chủ sở hữu nghỉ dưỡng)",short:"Tuấn Lê",phone:"0900 000 004",scale:1.05,seed:44,note:"hạng Gold, gần Diamond"},
  {id:"quang",name:"Anh Quang (khách mới, chưa có điểm)",short:"Quang Võ",phone:"0900 000 005",scale:0,seed:55,note:"chưa có giao dịch"}
 ];
 const EARN = [
