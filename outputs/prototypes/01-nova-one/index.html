@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nova One - Prototype</title>
+<style>
+:root{
+  --bg:#eef2f4; --surface:#fff; --ink:#18242e; --muted:#566370; --line:#d5dde2;
+  --brand:#0a5c73; --brand-ink:#fff; --brand-soft:#e1f1f5; --gold:#f2b84b; --gold-ink:#3b2a00;
+  --ok:#14703c; --ok-soft:#e1f5e8; --warn:#8a5a00; --warn-soft:#fff3d6; --err:#b3261e; --err-soft:#fde8e6;
+  --r:14px; --tap:44px; --shadow:0 6px 24px rgba(20,40,60,.12);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.45}
+#app{max-width:430px;min-height:100dvh;margin:0 auto;background:var(--bg);position:relative;display:flex;flex-direction:column}
+@media(min-width:500px){#app{margin:16px auto;min-height:calc(100dvh - 32px);border-radius:24px;box-shadow:var(--shadow);overflow:hidden}}
+button,input,select{font:inherit;color:inherit}
+button{min-height:var(--tap);min-width:var(--tap);cursor:pointer}
+:focus-visible{outline:3px solid #1b7fd1;outline-offset:2px}
+.demo-banner{background:var(--warn-soft);color:var(--warn);font-size:13px;padding:6px 16px;text-align:center;border-bottom:1px solid #ecd9a6}
+main{flex:1;padding:16px 16px 88px;overflow-y:auto}
+h1{font-size:22px;margin:0 0 4px} h2{font-size:18px;margin:20px 0 8px} h3{font-size:16px;margin:0}
+p{margin:4px 0 8px} .muted{color:var(--muted);font-size:14px}
+.card{background:var(--surface);border-radius:var(--r);padding:16px;box-shadow:0 1px 3px rgba(20,40,60,.08);margin-bottom:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:12px;padding:10px 18px;font-weight:600;background:var(--brand);color:var(--brand-ink)}
+.btn.block{width:100%}
+.btn.sec{background:var(--brand-soft);color:var(--brand)}
+.btn.ghost{background:transparent;color:var(--brand);border:1.5px solid var(--brand)}
+.btn.gold{background:var(--gold);color:var(--gold-ink)}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.field{display:block;margin:12px 0}
+.field span{display:block;font-size:14px;font-weight:600;margin-bottom:4px}
+.field input,.field select{width:100%;min-height:48px;padding:10px 12px;border:1.5px solid #8a98a4;border-radius:12px;background:#fff}
+.err{color:var(--err);font-size:14px;margin-top:6px;font-weight:600}
+.chip{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600;background:var(--brand-soft);color:var(--brand)}
+.chip.bds{background:#e3ecff;color:#1f3f9a}.chip.stay{background:#e1f5e8;color:#14703c}.chip.fnb{background:#fff0d9;color:#7a4a00}.chip.svc{background:#f1e6fb;color:#5b2a86}
+.member{background:linear-gradient(135deg,#0a5c73,#0b3b52);color:#fff;border-radius:20px;padding:20px;box-shadow:var(--shadow)}
+.member.Gold{background:linear-gradient(135deg,#8a6410,#4d3606)}
+.member.Diamond{background:linear-gradient(135deg,#2c2f6b,#10123a)}
+.member .tier{font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:13px;background:rgba(255,255,255,.2);padding:3px 12px;border-radius:99px}
+.member .pts{font-size:42px;font-weight:800;line-height:1.1;margin:10px 0 2px}
+.bar{height:10px;border-radius:99px;background:rgba(255,255,255,.28);overflow:hidden;margin:10px 0 4px}
+.bar>i{display:block;height:100%;background:var(--gold);border-radius:99px;transition:width .5s}
+.row{display:flex;gap:12px;align-items:center;justify-content:space-between}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tx{display:flex;gap:10px;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line)}
+.tx:last-child{border:0}
+.pos{color:var(--ok);font-weight:700}.neg{color:var(--err);font-weight:700}
+.filters{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px}
+.filters button{white-space:nowrap;border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:6px 14px}
+.filters button[aria-pressed=true]{background:var(--brand);color:#fff;border-color:var(--brand)}
+nav.tabs{position:sticky;bottom:0;display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border-top:1px solid var(--line);margin-top:auto}
+nav.tabs button{border:0;background:none;padding:6px 2px;font-size:12px;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:56px}
+nav.tabs button[aria-current=page]{color:var(--brand);font-weight:700;box-shadow:inset 0 3px 0 var(--brand)}
+nav.tabs svg{width:22px;height:22px}
+.sheet-bg{position:absolute;inset:0;background:rgba(10,20,30,.5);display:flex;align-items:flex-end;z-index:10}
+.sheet{background:#fff;width:100%;border-radius:22px 22px 0 0;padding:20px 16px 24px;max-height:90%;overflow:auto}
+.toast{position:absolute;left:16px;right:16px;bottom:76px;background:#18242e;color:#fff;padding:12px 16px;border-radius:12px;z-index:20}
+.spin{width:36px;height:36px;border:4px solid var(--brand-soft);border-top-color:var(--brand);border-radius:50%;animation:sp 1s linear infinite;margin:40px auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.spin{animation-duration:3s}.bar>i{transition:none}}
+.empty{text-align:center;padding:28px 12px;color:var(--muted)}
+.switch{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+.switch input{width:24px;height:24px;margin-top:2px;flex:none}
+.persona{display:flex;gap:10px;align-items:center;width:100%;text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:8px 12px;margin-bottom:8px}
+.persona[aria-pressed=true]{border-color:var(--brand);background:var(--brand-soft)}
+.otp{letter-spacing:.5em;text-align:center;font-size:22px}
+.logo{width:56px;height:56px;border-radius:16px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800;font-size:22px;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div id="app"><div class="demo-banner">Prototype: dữ liệu giả lập, tên công ty thành viên là giả định</div><div id="root" style="display:flex;flex-direction:column;flex:1"></div></div>
+<script>
+"use strict";
+const TODAY = new Date(2026,10,18);
+const fmtD = d => String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0")+"/"+d.getFullYear();
+const nf = n => n.toLocaleString("vi-VN");
+const esc = s => String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const COMP = {bds:["Novaland (BĐS)","bds"],stay:["NovaWorld (nghỉ dưỡng)","stay"],fnb:["Nova F&B","fnb"],svc:["Nova Services","svc"]};
+const SECT = {all:"Tất cả",bds:"BĐS",stay:"Lưu trú",fnb:"F&B",svc:"Dịch vụ"};
+const TIERS = [{n:"Silver",min:0},{n:"Gold",min:5000},{n:"Diamond",min:15000}];
+const tierOf = pts => [...TIERS].reverse().find(t=>pts>=t.min);
+const nextTier = pts => TIERS.find(t=>t.min>pts);
+
+const PERSONAS = [
+ {id:"lan",name:"Chị Lan (cư dân, chủ sở hữu)",short:"Lan Phạm",phone:"0900 000 001",scale:1,seed:11,note:"hạng Gold"},
+ {id:"minh",name:"Anh Minh (khách thân thiết)",short:"Minh Trần",phone:"0900 000 002",scale:2.7,seed:22,note:"hạng Diamond"},
+ {id:"ha",name:"Chị Hà (mới tham gia)",short:"Hà Nguyễn",phone:"0900 000 003",scale:.33,seed:33,note:"hạng Silver"},
+ {id:"tuan",name:"Anh Tuấn (chủ sở hữu nghỉ dưỡng)",short:"Tuấn Lê",phone:"0900 000 004",scale:1.45,seed:44,note:"hạng Gold, gần Diamond"},
+ {id:"quang",name:"Anh Quang (khách mới, chưa có điểm)",short:"Quang Võ",phone:"0900 000 005",scale:0,seed:55,note:"chưa có giao dịch"}
+];
+const EARN = [
+ ["bds","Thanh toán phí quản lý tháng",180],["bds","Thanh toán đợt hợp đồng",900],["stay","Lưu trú NovaWorld Phan Thiết",620],
+ ["stay","Lưu trú NovaWorld Hồ Tràm",540],["fnb","Bữa tối nhà hàng Biển Xanh",90],["fnb","Cà phê và bánh",35],
+ ["svc","Dịch vụ vệ sinh căn hộ",60],["svc","Gửi xe tháng",45]
+];
+const GIFTS = [
+ {id:"g1",c:"stay",t:"1 đêm NovaWorld Phan Thiết (Deluxe)",cost:6000,cross:true,cat:"Đêm nghỉ"},
+ {id:"g2",c:"stay",t:"1 đêm NovaWorld Hồ Tràm (Garden)",cost:6500,cross:true,cat:"Đêm nghỉ"},
+ {id:"g3",c:"stay",t:"Nâng hạng phòng miễn phí",cost:2000,cross:true,cat:"Đêm nghỉ"},
+ {id:"g4",c:"fnb",t:"Voucher F&B 100.000đ",cost:500,cat:"F&B"},
+ {id:"g5",c:"fnb",t:"Voucher F&B 300.000đ",cost:1400,cat:"F&B"},
+ {id:"g6",c:"fnb",t:"Bữa sáng cho 2 người",cost:700,cat:"F&B"},
+ {id:"g7",c:"bds",t:"Giảm 10% phí quản lý 1 tháng",cost:1200,cat:"Dịch vụ"},
+ {id:"g8",c:"svc",t:"Vệ sinh căn hộ 1 lần",cost:1000,cat:"Dịch vụ"},
+ {id:"g9",c:"svc",t:"Gửi xe ô tô 1 tháng",cost:900,cat:"Dịch vụ"},
+ {id:"g10",c:"stay",t:"Spa 60 phút",cost:1600,cross:true,cat:"Nghỉ dưỡng"},
+ {id:"g11",c:"stay",t:"Vé khu giải trí 2 người",cost:800,cross:true,cat:"Nghỉ dưỡng"},
+ {id:"g12",c:"fnb",t:"Voucher mua sắm đối tác 200.000đ",cost:1100,cat:"Đối tác"}
+];
+const CODES = {"NV-AQ-1024":"Căn hộ A-12, Aqua City (mẫu)","NV-WP-2208":"Villa nghỉ dưỡng NovaWorld (mẫu)"};
+
+function rng(seed){let s=seed;return()=>{s=(s*1664525+1013904223)%4294967296;return s/4294967296}}
+function genTx(p){
+  if(!p.scale) return [];
+  const r=rng(p.seed), out=[]; let bal=0, day=330;
+  const n=36;
+  for(let i=0;i<n;i++){
+    day-=Math.round(5+r()*8);
+    const t=EARN[Math.floor(r()*EARN.length)];
+    const amt=Math.max(10,Math.round(t[2]*p.scale*(.8+r()*.5)/10)*10);
+    const d=new Date(TODAY);d.setDate(d.getDate()-Math.max(day,1));
+    out.push({c:t[0],t:t[1],a:amt,d});bal+=amt;
+    if(i%11===10){const g=GIFTS[3+Math.floor(r()*3)];if(bal>=g.cost){out.push({c:g.c,t:"Đổi: "+g.t,a:-g.cost,d});bal-=g.cost}}
+  }
+  out.push({c:"bds",t:"Giới thiệu bạn bè thành công",a:500,d:new Date(TODAY.getTime()-9*864e5)});
+  return out.sort((a,b)=>b.d-a.d);
+}
+function lifetime(txs){return txs.filter(x=>x.a>0).reduce((s,x)=>s+x.a,0)}
+function balanceOf(txs){return txs.reduce((s,x)=>s+x.a,0)}
+
+const S = {
+  screen:"login", persona:PERSONAS[0], phone:PERSONAS[0].phone, otpErr:"", linkErr:"", linked:false,
+  txs:[], filter:"all", sheet:null, toast:"", loading:false, giftCat:"Tất cả",
+  consent:{core:true,personal:true,cross:true,mkt:false}, consentLog:[], refs:[], redeemed:[]
+};
+function loadPersona(p){
+  S.persona=p;S.phone=p.phone;S.txs=genTx(p);S.linked=p.scale>0;
+  S.refs=[{n:"Bạn Hoàng (mẫu)",st:"Đã mua trải nghiệm - +500 điểm"},{n:"Bạn Thảo (mẫu)",st:"Đã đăng ký, chờ trải nghiệm"}];
+  S.consent={core:true,personal:true,cross:true,mkt:false};S.consentLog=[];S.redeemed=[];
+}
+loadPersona(PERSONAS[0]);
+const bal=()=>balanceOf(S.txs), life=()=>lifetime(S.txs);
+
+function go(sc){S.screen=sc;S.sheet=null;render();document.getElementById("main")?.focus()}
+function toast(m){S.toast=m;render();clearTimeout(toast.t);toast.t=setTimeout(()=>{S.toast="";render()},2600)}
+function addTx(c,t,a){S.txs.unshift({c,t,a,d:new Date(TODAY)})}
+function wait(fn,ms=700){S.loading=true;render();setTimeout(()=>{S.loading=false;fn();render()},ms)}
+
+const ICON = {
+ home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>',
+ list:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>',
+ gift:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="13" rx="1"/><path d="M12 8v13M3 12h18M12 8c-3 0-5-4-2-4s2 4 2 4zm0 0c3 0 5-4 2-4s-2 4-2 4z"/></svg>',
+ users:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-4 3-6 7-6s7 2 7 6M17 5a3.5 3.5 0 010 7M22 20c0-3-2-5-4-5.6"/></svg>',
+ shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>'
+};
+function tabs(){
+  const t=[["home","Trang chủ","home"],["history","Lịch sử","list"],["rewards","Đổi điểm","gift"],["referral","Giới thiệu","users"],["privacy","Dữ liệu","shield"]];
+  return `<nav class="tabs" aria-label="Điều hướng chính">${t.map(x=>`<button data-go="${x[0]}" ${S.screen===x[0]?'aria-current="page"':""}>${ICON[x[2]]}<span>${x[1]}</span></button>`).join("")}</nav>`;
+}
+const chip=c=>`<span class="chip ${COMP[c][1]}">${COMP[c][0]}</span>`;
+
+function vLogin(){
+  return `<main id="main" tabindex="-1"><div class="logo" aria-hidden="true">N1</div><h1>Nova One</h1>
+  <p class="muted">Một ID thành viên, một ví điểm cho cư dân, khách lưu trú và chủ sở hữu (tên thương hiệu là placeholder).</p>
+  <h2>Chọn tài khoản demo</h2>
+  ${PERSONAS.map(p=>`<button class="persona" data-persona="${p.id}" aria-pressed="${p===S.persona}"><span><strong>${p.name}</strong><br><span class="muted">${p.phone} · ${p.note}</span></span></button>`).join("")}
+  <label class="field"><span>Số điện thoại</span><input id="phone" inputmode="tel" value="${esc(S.phone)}" autocomplete="off"></label>
+  <button class="btn block" data-act="sendotp">Nhận mã OTP</button></main>`;
+}
+function vOtp(){
+  if(S.loading) return `<main id="main" tabindex="-1"><div class="spin" role="status" aria-label="Đang xác thực"></div><p class="empty">Đang xác thực...</p></main>`;
+  return `<main id="main" tabindex="-1"><button class="btn ghost" data-go="login">Quay lại</button><h1 style="margin-top:16px">Nhập mã OTP</h1>
+  <p class="muted">Mã đã gửi tới ${esc(S.phone)} (mô phỏng). Dùng mã <strong>123456</strong>.</p>
+  <label class="field"><span>Mã OTP 6 số</span><input id="otp" class="otp" inputmode="numeric" maxlength="6" autocomplete="off"></label>
+  ${S.otpErr?`<div class="err" role="alert">${S.otpErr}</div>`:""}
+  <button class="btn block" style="margin-top:12px" data-act="verify">Xác nhận</button></main>`;
+}
+const CONS = [
+ ["core","Quản lý tài khoản và điểm thưởng","Bắt buộc để dùng Nova One.",true],
+ ["personal","Gợi ý ưu đãi cá nhân hóa","Dùng lịch sử tích/đổi điểm để gợi ý quà phù hợp.",false],
+ ["cross","Chia sẻ dữ liệu giữa các công ty thành viên Novagroup","Cho phép tích và đổi điểm liên ngành (BĐS, nghỉ dưỡng, F&B). Nếu tắt, quà nghỉ dưỡng bị khóa.",false],
+ ["mkt","Nhận thông tin tiếp thị qua SMS/Zalo","Tùy chọn, có thể tắt bất kỳ lúc nào.",false]
+];
+function consentList(){
+  return CONS.map(c=>`<label class="switch"><input type="checkbox" data-consent="${c[0]}" ${S.consent[c[0]]?"checked":""} ${c[3]?"disabled":""}><span><strong>${c[1]}</strong><br><span class="muted">${c[2]}</span></span></label>`).join("");
+}
+function vConsent(){
+  return `<main id="main" tabindex="-1"><h1>Đồng ý sử dụng dữ liệu</h1><p class="muted">Theo từng mục đích. Bạn có thể xem và rút lại bất kỳ lúc nào trong mục Dữ liệu.</p>
+  <div class="card">${consentList()}</div>
+  <button class="btn block" data-act="consentok">Tiếp tục</button></main>`;
+}
+function vLink(){
+  return `<main id="main" tabindex="-1"><h1>Liên kết hợp đồng</h1><p class="muted">Nhập mã hợp đồng mua nhà hoặc lưu trú để nhận điểm chào mừng 300 điểm. Mã mẫu: <strong>NV-AQ-1024</strong> hoặc <strong>NV-WP-2208</strong>.</p>
+  <label class="field"><span>Mã hợp đồng</span><input id="code" autocomplete="off" placeholder="NV-XX-0000"></label>
+  ${S.linkErr?`<div class="err" role="alert">${S.linkErr}</div>`:""}
+  <button class="btn block" style="margin:12px 0" data-act="link">Liên kết</button>
+  <button class="btn ghost block" data-act="skiplink">Để sau</button></main>`;
+}
+function progressBlock(){
+  const L=life(), t=tierOf(L), nx=nextTier(L);
+  const pct=nx?Math.min(100,Math.round((L-t.min)/(nx.min-t.min)*100)):100;
+  return {t,nx,pct,L};
+}
+function vHome(){
+  const {t,nx,pct,L}=progressBlock(), b=bal(), exp=Math.round(b*.08/10)*10;
+  return `<main id="main" tabindex="-1"><div class="row"><div><p class="muted" style="margin:0">Xin chào,</p><h1>${esc(S.persona.short)}</h1></div></div>
+  <section class="member ${t.n}" aria-label="Thẻ thành viên"><div class="row"><span class="tier" id="tier">${t.n}</span><span style="font-size:13px;opacity:.85">ID Nova One · ${esc(S.persona.id.toUpperCase())}-0${S.persona.seed}</span></div>
+   <div class="pts" id="balance">${nf(b)}</div><div style="opacity:.9">điểm khả dụng</div>
+   <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}" aria-label="Tiến độ lên hạng"><i id="bar" style="width:${pct}%"></i></div>
+   <div style="font-size:13px" id="progtxt">${nx?`Còn ${nf(nx.min-L)} điểm tích lũy để lên ${nx.n} (${nf(L)}/${nf(nx.min)})`:`Bạn đang ở hạng cao nhất (tích lũy ${nf(L)} điểm)`}</div></section>
+  ${b>0?`<div class="card" style="margin-top:12px"><strong>${nf(exp)} điểm</strong> sẽ hết hạn ngày 31/12/2026<p class="muted" style="margin:2px 0 0">Đổi quà trước hạn để không mất điểm.</p></div>`:""}
+  <div class="grid2" style="margin-top:12px"><button class="btn" data-go="rewards">Đổi điểm</button><button class="btn sec" data-go="history">Lịch sử</button></div>
+  <h2>Hạng thành viên</h2><div class="card muted">Silver: 0-4.999 điểm tích lũy. Gold: 5.000-14.999. Diamond: từ 15.000. Hạng tính theo điểm tích lũy, đổi quà không làm giảm hạng.</div>
+  <h2>Mô phỏng giao dịch</h2><div class="card"><p class="muted">Bấm để giả lập phát sinh điểm và xem số dư, tiến độ cập nhật ngay.</p>
+   <div class="grid2"><button class="btn sec" data-sim="bds">Phí quản lý +180</button><button class="btn sec" data-sim="stay">Lưu trú +620</button><button class="btn sec" data-sim="fnb">Ăn uống +90</button><button class="btn sec" data-sim="svc">Dịch vụ +60</button></div></div></main>`;
+}
+function vHistory(){
+  const list=S.txs.filter(x=>S.filter==="all"||x.c===S.filter);
+  return `<main id="main" tabindex="-1"><h1>Lịch sử điểm</h1>
+  <div class="filters" role="group" aria-label="Lọc theo mảng">${Object.entries(SECT).map(([k,v])=>`<button data-filter="${k}" aria-pressed="${S.filter===k}">${v}</button>`).join("")}</div>
+  <div class="card" style="margin-top:8px">${list.length?list.map(x=>`<div class="tx"><div>${chip(x.c)}<div>${esc(x.t)}</div><div class="muted">${fmtD(x.d)}</div></div><div class="${x.a>0?"pos":"neg"}">${x.a>0?"+":""}${nf(x.a)}</div></div>`).join(""):`<div class="empty"><strong>Chưa có giao dịch</strong><br>${S.txs.length?"Không có giao dịch thuộc mảng này.":"Liên kết hợp đồng hoặc đặt lưu trú để bắt đầu tích điểm."}</div>`}</div></main>`;
+}
+function vRewards(){
+  const cats=["Tất cả",...new Set(GIFTS.map(g=>g.cat))], b=bal();
+  const gs=GIFTS.filter(g=>S.giftCat==="Tất cả"||g.cat===S.giftCat);
+  return `<main id="main" tabindex="-1"><div class="row"><h1>Đổi điểm</h1><strong>${nf(b)} điểm</strong></div>
+  <div class="filters" role="group" aria-label="Nhóm quà">${cats.map(c=>`<button data-gcat="${c}" aria-pressed="${S.giftCat===c}">${c}</button>`).join("")}</div>
+  ${gs.map(g=>{const lock=g.cross&&!S.consent.cross, miss=g.cost-b;
+   return `<div class="card" style="margin-top:10px"><div class="row" style="align-items:flex-start"><div>${chip(g.c)}<h3 style="margin-top:4px">${g.t}</h3>
+   <div class="muted">${nf(g.cost)} điểm${lock?" · cần đồng ý chia sẻ dữ liệu liên công ty":miss>0?` · còn thiếu ${nf(miss)} điểm`:""}</div></div>
+   <button class="btn ${miss>0||lock?"ghost":""}" data-gift="${g.id}" aria-label="Đổi ${esc(g.t)}">Đổi</button></div></div>`}).join("")}
+  ${S.redeemed.length?`<h2>Quà đã đổi</h2><div class="card">${S.redeemed.map(r=>`<div class="tx"><div>${esc(r.t)}<div class="muted">Mã: <strong>${r.code}</strong></div></div></div>`).join("")}</div>`:""}</main>`;
+}
+function vReferral(){
+  return `<main id="main" tabindex="-1"><h1>Giới thiệu bạn bè</h1><p class="muted">Bạn và người được giới thiệu cùng nhận điểm khi họ hoàn tất giao dịch đầu tiên.</p>
+  <div class="card" style="text-align:center"><div class="muted">Mã của bạn</div><div style="font-size:28px;font-weight:800;letter-spacing:.1em" id="refcode">NOVA-${S.persona.id.toUpperCase()}${S.persona.seed}</div>
+  <button class="btn sec" style="margin-top:8px" data-act="copy">Sao chép mã</button></div>
+  <h2>Trạng thái giới thiệu</h2><div class="card">${S.refs.map(r=>`<div class="tx"><div>${r.n}<div class="muted">${r.st}</div></div></div>`).join("")}</div>
+  <button class="btn gold block" data-act="addref">Mô phỏng: bạn mới hoàn tất giao dịch (+500)</button></main>`;
+}
+function vPrivacy(){
+  return `<main id="main" tabindex="-1"><h1>Quản lý đồng ý dữ liệu</h1><p class="muted">Mọi thay đổi có hiệu lực ngay và được ghi lại.</p>
+  <div class="card">${consentList()}</div>
+  <h2>Lịch sử đồng ý</h2><div class="card">${S.consentLog.length?S.consentLog.map(l=>`<div class="tx"><div>${l.t}</div><div class="muted">${l.d}</div></div>`).join(""):`<div class="empty">Chưa có thay đổi nào trong phiên này.</div>`}</div>
+  <button class="btn ghost block" data-act="logout">Đăng xuất</button></main>`;
+}
+function vSheet(){
+  const s=S.sheet; if(!s) return "";
+  if(s.type==="gift"){
+    const g=GIFTS.find(x=>x.id===s.id), b=bal(), lock=g.cross&&!S.consent.cross;
+    let body;
+    if(S.loading) body=`<div class="spin" role="status" aria-label="Đang xử lý"></div>`;
+    else if(s.done) body=`<h2 style="margin-top:0">Đổi quà thành công</h2><p>${g.t}</p><p>Mã quà: <strong id="giftcode">${s.done}</strong></p><p class="muted">Số dư mới: <strong>${nf(b)} điểm</strong></p><button class="btn block" data-act="closesheet">Xong</button>`;
+    else if(lock) body=`<h2 style="margin-top:0">Cần đồng ý chia sẻ dữ liệu</h2><p class="err">Quà nghỉ dưỡng cần đồng ý chia sẻ dữ liệu giữa các công ty thành viên.</p><button class="btn block" data-act="enablecross">Bật đồng ý và tiếp tục</button><button class="btn ghost block" style="margin-top:8px" data-act="closesheet">Để sau</button>`;
+    else if(b<g.cost) body=`<h2 style="margin-top:0">Chưa đủ điểm</h2><p class="err" role="alert">Bạn cần thêm ${nf(g.cost-b)} điểm để đổi quà này (còn ${nf(b)}/${nf(g.cost)}).</p><button class="btn block" data-act="closesheet">Đã hiểu</button>`;
+    else body=`<h2 style="margin-top:0">Xác nhận đổi quà</h2><p>${g.t}</p><div class="row"><span>Điểm trừ</span><strong>-${nf(g.cost)}</strong></div><div class="row"><span>Số dư sau khi đổi</span><strong>${nf(b-g.cost)}</strong></div>
+      <button class="btn block" style="margin-top:12px" data-act="confirmgift">Xác nhận đổi</button><button class="btn ghost block" style="margin-top:8px" data-act="closesheet">Hủy</button>`;
+    return `<div class="sheet-bg" data-act="bg"><div class="sheet" role="dialog" aria-modal="true" aria-label="Đổi quà">${body}</div></div>`;
+  }
+}
+function render(){
+  const sc=S.screen, authed=["home","history","rewards","referral","privacy"].includes(sc);
+  const v={login:vLogin,otp:vOtp,consent:vConsent,link:vLink,home:vHome,history:vHistory,rewards:vRewards,referral:vReferral,privacy:vPrivacy}[sc]();
+  const root=document.getElementById("root");
+  const ph=document.activeElement&&document.activeElement.id;
+  root.innerHTML=v+(authed?tabs():"")+vSheet()+(S.toast?`<div class="toast" role="status">${S.toast}</div>`:"");
+  if(ph){const e=document.getElementById(ph);if(e&&"value" in e)e.focus()}
+}
+document.addEventListener("click",e=>{
+  const el=e.target.closest("[data-go],[data-act],[data-persona],[data-filter],[data-gcat],[data-gift],[data-sim]");
+  if(!el) return;
+  const d=el.dataset;
+  if(d.go) return go(d.go);
+  if(d.persona){const p=PERSONAS.find(x=>x.id===d.persona);loadPersona(p);return render()}
+  if(d.filter){S.filter=d.filter;return render()}
+  if(d.gcat){S.giftCat=d.gcat;return render()}
+  if(d.gift){S.sheet={type:"gift",id:d.gift};return render()}
+  if(d.sim){const m={bds:["Thanh toán phí quản lý (mô phỏng)",180],stay:["Lưu trú NovaWorld (mô phỏng)",620],fnb:["Ăn uống (mô phỏng)",90],svc:["Dịch vụ (mô phỏng)",60]}[d.sim];addTx(d.sim,m[0],m[1]);return toast("+"+m[1]+" điểm đã được cộng")}
+  switch(d.act){
+   case "sendotp":{const v=document.getElementById("phone").value.trim();if(v.replace(/\D/g,"").length<9){S.phone=v;return toast("Số điện thoại chưa hợp lệ")}S.phone=v;S.otpErr="";return go("otp")}
+   case "verify":{const v=document.getElementById("otp").value;if(v!=="123456"){S.otpErr="Mã OTP không đúng. Hãy thử lại với 123456.";return render()}wait(()=>{S.screen="consent"},800);return}
+   case "consentok":return go("link");
+   case "link":{const c=document.getElementById("code").value.trim().toUpperCase();if(!CODES[c]){S.linkErr="Không tìm thấy hợp đồng với mã này. Kiểm tra lại mã hoặc chọn Để sau.";return render()}
+     S.linkErr="";if(!S.linked){addTx("bds","Điểm chào mừng khi liên kết "+CODES[c],300);S.linked=true}S.screen="home";return toast("Đã liên kết: "+CODES[c])}
+   case "skiplink":return go("home");
+   case "copy":try{navigator.clipboard.writeText(document.getElementById("refcode").textContent)}catch(_){}return toast("Đã sao chép mã giới thiệu");
+   case "addref":S.refs.unshift({n:"Bạn Mai (mẫu)",st:"Đã mua trải nghiệm - +500 điểm"});addTx("bds","Giới thiệu bạn bè thành công",500);return toast("+500 điểm giới thiệu");
+   case "logout":return go("login");
+   case "closesheet":S.sheet=null;return render();
+   case "bg":if(e.target===el){S.sheet=null;render()}return;
+   case "enablecross":S.consent.cross=true;S.consentLog.unshift({t:"Bật: chia sẻ dữ liệu liên công ty",d:fmtD(TODAY)});return render();
+   case "confirmgift":{const g=GIFTS.find(x=>x.id===S.sheet.id);wait(()=>{const code="NV"+Math.floor(100000+Math.random()*899999);addTx(g.c,"Đổi: "+g.t,-g.cost);S.redeemed.unshift({t:g.t,code});S.sheet.done=code},700);return}
+  }
+});
+document.addEventListener("change",e=>{
+  const k=e.target.dataset.consent; if(!k) return;
+  S.consent[k]=e.target.checked;
+  const lbl=CONS.find(c=>c[0]===k)[1];
+  S.consentLog.unshift({t:(e.target.checked?"Đồng ý: ":"Rút lại: ")+lbl,d:fmtD(TODAY)});
+  if(S.screen==="privacy") toast(e.target.checked?"Đã ghi nhận đồng ý":"Đã rút lại đồng ý");else render();
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&S.sheet){S.sheet=null;render()}if(e.key==="Enter"&&e.target.id==="otp")document.querySelector('[data-act="verify"]').click()});
+render();
+</script>
+</body>
+</html>
