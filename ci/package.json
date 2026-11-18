@@ -1,0 +1,13 @@
+{
+  "name": "competitor-intel",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Công cụ theo dõi đối thủ - tài chính tiêu dùng (MVP)",
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning server.js",
+    "seed:demo": "node --disable-warning=ExperimentalWarning lib/seed-demo.js",
+    "test": "node --disable-warning=ExperimentalWarning --test test/*.test.js"
+  }
+}
