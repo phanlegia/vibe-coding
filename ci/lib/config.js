@@ -1,6 +1,7 @@
+import { fileURLToPath } from 'node:url';
 export const cfg = {
   port: +process.env.PORT || 3000,
-  dbFile: process.env.DB_FILE || new URL('../data.sqlite', import.meta.url).pathname,
+  dbFile: process.env.DB_FILE || fileURLToPath(new URL('../data.sqlite', import.meta.url)),
   baseUrl: process.env.BASE_URL || `http://localhost:${process.env.PORT || 3000}`,
   // dev = đăng nhập bằng email (chỉ để thử); oidc = SSO thật
   authMode: process.env.AUTH_MODE || 'dev',

@@ -1,6 +1,7 @@
 import http from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { randomBytes } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
 import { extname, join, normalize } from 'node:path';
 import { all, get, run, tx } from './lib/db.js';
 import { cfg } from './lib/config.js';
@@ -8,7 +9,7 @@ import { TOPICS, LABELS, EVENT_NAMES, answer, keywordsOf, fold } from './lib/ai.
 import { ingestUrl, ingestText } from './lib/collector.js';
 import { startJobs, collectGuarded, flushOutbox } from './lib/jobs.js';
 
-const PUB = new URL('./public/', import.meta.url).pathname;
+const PUB = fileURLToPath(new URL('./public/', import.meta.url));
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml' };
 const RANK = { viewer: 1, editor: 2, admin: 3 };
 
