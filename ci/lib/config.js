@@ -5,6 +5,7 @@ export const cfg = {
   baseUrl: process.env.BASE_URL || `http://localhost:${process.env.PORT || 3000}`,
   // dev = đăng nhập bằng email (chỉ để thử); oidc = SSO thật
   authMode: process.env.AUTH_MODE || 'dev',
+  devPassword: process.env.DEV_PASSWORD || '', // mật khẩu dùng chung khi chưa có SSO
   oidc: {
     issuer: process.env.OIDC_ISSUER, clientId: process.env.OIDC_CLIENT_ID,
     clientSecret: process.env.OIDC_CLIENT_SECRET,

@@ -9,6 +9,9 @@ import { TOPICS, LABELS, EVENT_NAMES, answer, keywordsOf, fold } from './lib/ai.
 import { ingestUrl, ingestText } from './lib/collector.js';
 import { startJobs, collectGuarded, flushOutbox } from './lib/jobs.js';
 
+if (process.env.NODE_ENV === 'production' && cfg.authMode === 'dev' && !cfg.devPassword) {
+  console.error('Từ chối chạy: môi trường production với AUTH_MODE=dev cần đặt DEV_PASSWORD (hoặc dùng AUTH_MODE=oidc).'); process.exit(1);
+}
 const PUB = fileURLToPath(new URL('./public/', import.meta.url));
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml' };
 const RANK = { viewer: 1, editor: 2, admin: 3 };
@@ -20,7 +23,7 @@ const cookies = req => Object.fromEntries((req.headers.cookie || '').split(/;\s*
 const userOf = req => { const t = cookies(req).sid; return t ? get('SELECT u.* FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token=?', t) : null; };
 function startSession(res, userId) {
   const t = randomBytes(24).toString('hex'); run('INSERT INTO sessions(token,user_id) VALUES(?,?)', t, userId);
-  res.setHeader('Set-Cookie', `sid=${t}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${7 * 86400}`);
+  res.setHeader('Set-Cookie', `sid=${t}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${7 * 86400}${cfg.baseUrl.startsWith('https') ? '; Secure' : ''}`);
 }
 function upsertUser(email, name) {
   email = email.toLowerCase();
@@ -75,10 +78,12 @@ async function api(req, res, url) {
   const user = userOf(req);
   if (m !== 'GET' && !(req.headers['content-type'] || '').includes('application/json') && m !== 'DELETE' && !path.startsWith('/api/login')) throw new HttpError(415, 'Cần JSON');
 
-  if (path === '/api/config') return json(res, { authMode: cfg.authMode, topics: TOPICS, labels: LABELS, events: EVENT_NAMES, ai: cfg.anthropicKey ? 'claude' : 'rules', smtp: !!cfg.smtp.host });
+  if (path === '/api/config') return json(res, { authMode: cfg.authMode, needPassword: !!cfg.devPassword, topics: TOPICS, labels: LABELS, events: EVENT_NAMES, ai: cfg.anthropicKey ? 'claude' : 'rules', smtp: !!cfg.smtp.host });
   if (path === '/api/login' && m === 'POST') {
     if (cfg.authMode !== 'dev') throw new HttpError(400, 'Dùng SSO');
-    const b = await body(req); if (!/^[^@\s]+@[^@\s]+$/.test(b.email || '')) throw new HttpError(400, 'Email không hợp lệ');
+    const b = await body(req);
+    if (cfg.devPassword && b.password !== cfg.devPassword) throw new HttpError(403, 'Sai mật khẩu');
+    if (!/^[^@\s]+@[^@\s]+$/.test(b.email || '')) throw new HttpError(400, 'Email không hợp lệ');
     const u = upsertUser(b.email, b.name); startSession(res, u.id); return json(res, u);
   }
   if (path === '/api/logout' && m === 'POST') { const t = cookies(req).sid; if (t) run('DELETE FROM sessions WHERE token=?', t); res.setHeader('Set-Cookie', 'sid=; Max-Age=0; Path=/'); return json(res, { ok: true }); }

@@ -36,3 +36,7 @@ npm test
 - Tải lên PDF/Word chưa hỗ trợ (chỉ .txt/.md hoặc dán nội dung). Trang chặn crawl → dùng dán nội dung.
 - Bảng `metrics` có API (`POST /api/metrics`) nhưng chưa có form nhập trên giao diện.
 - Tìm kiếm tin của đối thủ có tên chung (vd. "MoMo") vẫn có thể nhiễu; hãy tinh chỉnh từ khóa.
+
+## Triển khai
+Cần hosting chạy tiến trình Node liên tục + ổ đĩa bền (SQLite). Dùng `ci/Dockerfile`, gắn volume vào `/data`.
+Biến bắt buộc khi public: `NODE_ENV=production`, `BASE_URL=https://tên-miền`, và `DEV_PASSWORD=...` (tạm) hoặc `AUTH_MODE=oidc` + thông số SSO.

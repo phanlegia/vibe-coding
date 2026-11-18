@@ -147,8 +147,8 @@ async function render() {
 }
 function login() {
   $('#app').innerHTML = CFG.authMode === 'oidc' ? `<div class="card login"><h2>Theo dõi đối thủ</h2><a href="/auth/login"><button class="p">Đăng nhập SSO</button></a></div>` :
-    `<div class="card login"><h2>Theo dõi đối thủ</h2><p class="mut">Chế độ DEV: nhập email để đăng nhập (người đầu tiên là admin). Triển khai thật hãy đặt AUTH_MODE=oidc.</p><div class="row"><input id="em" type="email" class="grow" placeholder="email@congty.com"><button class="p" id="go">Vào</button></div><div id="e" class="err"></div></div>`;
-  if (CFG.authMode !== 'oidc') $('#go').onclick = async () => { try { await api('/login', 'POST', { email: $('#em').value }); boot(); } catch (e) { $('#e').textContent = e.message; } };
+    `<div class="card login"><h2>Theo dõi đối thủ</h2><p class="mut">Chế độ DEV: nhập email để đăng nhập (người đầu tiên là admin). Triển khai thật hãy đặt AUTH_MODE=oidc.</p><div class="row"><input id="em" type="email" class="grow" placeholder="email@congty.com">${CFG.needPassword ? '<input id="pw" type="password" placeholder="Mật khẩu chung">' : ''}<button class="p" id="go">Vào</button></div><div id="e" class="err"></div></div>`;
+  if (CFG.authMode !== 'oidc') $('#go').onclick = async () => { try { await api('/login', 'POST', { email: $('#em').value, password: $('#pw')?.value }); boot(); } catch (e) { $('#e').textContent = e.message; } };
 }
 async function boot() {
   CFG = await api('/config'); ME = await api('/me');
